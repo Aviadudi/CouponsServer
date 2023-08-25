@@ -1,0 +1,25 @@
+IMPORTANT TO DO LIST:
+
+
+TO DO LIST:
+
+MAYBE:
+cascade (example - @oneToMany(cascade={CascadeType.REMOVE), mappedBy...., fetch=.....)
+add constructor to user that by default make type to CUSTOMER
+get purchases depend on user type: customer can see only his purchases, company only coupons from his company, admin all
+delete Expired Coupons
+
+
+DONE:
+verify amount of coupon when making purchase
+Login filter
+Cors filter
+exception handler
+make purchase transactional (all or nothing)
+reduce coupon amount after purchase completed
+insert purchase only by coupon id and amount, the rest information get from token (such as user id) and DB (such as coupon price)...
+fetch type  (example - CouponEntity)
+***** extract data from token *****
+add email to users
+add verification to add and update coupon that see if user is COMPANY or ADMIN type
+get coupon price from DB and add total price to purchases

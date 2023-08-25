@@ -1,0 +1,143 @@
+Categories:
+
+INSERT INTO coupons.categories (name) VALUE ("Spa");
+INSERT INTO coupons.categories (name) VALUE ("Food");
+INSERT INTO coupons.categories (name) VALUE ("Electric");
+INSERT INTO coupons.categories (name) VALUE ("Car");
+INSERT INTO coupons.categories (name) VALUE ("Sport");
+
+
+    {
+       "name": "Spa"
+    }
+    {
+        "name": "Food"
+    }
+    {
+        "name": "Electric"
+    }
+    {
+        "name": "Car"
+    }
+    {
+        "name": "Sport"
+    }
+
+
+Companies:
+
+INSERT INTO coupons.companies (name, address, email, phone) VALUES ("Coca-Cola", "Israel", "customers@Coca-Cola.com" , "0555555555");
+INSERT INTO coupons.companies (name, address, email, phone) VALUES ("Nestle", "Israel", "customers@Nestle.com" , "0555555555");
+
+{
+  "name":"Coca-Cola",
+  "address":"Israel",
+  "phone":"0555555555",
+  "email":"Customers@Coca-Cola.com"
+}
+{
+  "name":"Nestle",
+  "address":"Israel",
+  "phone":"0555555555",
+  "email":"Customers@Nestle.com"
+}
+
+
+
+Users:
+
+insert into coupons.users (user_name, password, user_type, company_id, email) values ("user 1", "Password1", "ADMIN", NULL, "admin@coupons.com");
+
+insert into coupons.users (user_name, password, user_type, company_id, email) values ("user 2", "Password1", "COMPANY", 1, "user2@Coca-Cola.com");
+
+insert into coupons.users (user_name, password, user_type, company_id, email) values ("user 3", "Password1", "COMPANY", 2, "user3@Nestle.com");
+
+insert into coupons.users (user_name, password, user_type, company_id, email) values ("user 4", "Password1", "CUSTOMER", NULL, "user4@Gmail.com");
+
+{
+  "username": "user 1",
+  "password": "Password1",
+  "userType": "ADMIN",
+  "email": "admin@coupons.com"
+}
+{
+  "username": "user 2",
+  "password": "Password1",
+  "userType": "COMPANY",
+  "companyId": 1,
+  "email": "user2@Coca-Cola.com"
+}
+{
+  "username": "user 3",
+  "password": "Password1",
+  "userType": "COMPANY",
+  "companyId": 2,
+  "email": "user3@Nestle.com"
+}
+{
+  "username": "user 4",
+  "password": "Password1",
+  "userType": "CUSTOMER",
+  "email": "user4@Gmail.com"
+}
+
+
+
+Coupons:
+
+INSERT INTO coupons.coupons (name, amount, description, end_date, price, start_date, category_id, company_id, user_id) VALUES ("coupon 1", "40", "description description" , "2024-05-20", "30", "2024-03-20", "1", "2", "1");
+
+INSERT INTO coupons.coupons (name, amount, description, end_date, price, start_date, category_id, company_id, user_id) VALUES ("coupon 2", "30", "description description" , "2024-05-30", "50", "2024-03-30", "2", "2", "3");
+
+{
+  "name": "coupon 1",
+  "description": "description, description",
+  "startDate": "2024-03-30",
+  "endDate": "2024-05-30",
+  "amount": 40,
+  "categoryId": 1,
+  "companyId": 1,
+  "userId": 2,
+  "price": 30
+}
+{
+  "name": "coupon 2",
+  "description": "description, description",
+  "startDate": "2024-03-30",
+  "endDate": "2024-05-30",
+  "amount": 30,
+  "categoryId": 2,
+  "companyId": 2,
+  "userId": 3,
+  "price": 50
+}
+
+
+
+Purchases:
+
+INSERT INTO coupons.purchases (amount, total_price, purchase_date, company_id, coupon_id, user_id) VALUES ("2", "40", "2023-05-20" , "2", "2", "4");
+
+INSERT INTO coupons.purchases (amount, total_price, purchase_date, company_id, coupon_id, user_id) VALUES ("3", "100", "2023-05-20" , "1", "1", "4");
+
+
+{
+  "amount":2,
+  "couponId":1
+}
+
+{
+  "amount":1,
+  "couponId":2
+}
+
+{
+  "amount":4,
+  "couponId":2
+}
+
+{
+  "amount":6,
+  "couponId":1
+}
+
