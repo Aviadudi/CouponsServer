@@ -47,7 +47,11 @@ public class UserEntity {
         this.username = user.getUsername();
         this.password = user.getPassword();
         this.email = user.getEmail();
-        this.userType = user.getUserType();
+        if (user.getUserType() == null){
+            this.userType=UserType.CUSTOMER;
+        }else {
+            this.userType = user.getUserType();
+        }
         this.company = new CompanyEntity();
         setCompanyId(user);
     }

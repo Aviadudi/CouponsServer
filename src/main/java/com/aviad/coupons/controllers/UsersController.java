@@ -33,8 +33,8 @@ public class UsersController {
 
     // Get all users
     @GetMapping
-    public List<User> getUsers () throws ApplicationException {
-        return this.userLogic.getAllUsers();
+    public List<User> getUsers (@RequestHeader("Authorization") String token) throws ApplicationException {
+        return this.userLogic.getAllUsers(token);
     }
 
     // Get user
@@ -49,10 +49,17 @@ public class UsersController {
         this.userLogic.deleteUser(id);
     }
 
+    // Get user by token
+    @GetMapping("/byToken")
+    public User getUserByToken(@RequestHeader("Authorization") String token) throws ApplicationException {
+        return this.userLogic.getUserByToken(token);
+    }
+
+
     // Get users by company id
     @GetMapping("/byCompanyId")
-    public List<User> getUsersByCompanyId (@RequestParam("id") int id) throws ApplicationException {
-        return this.userLogic.getUsersByCompanyId(id);
+    public List<User> getUsersByCompanyId (@RequestParam("id") int id, @RequestHeader("Authorization") String token) throws ApplicationException {
+        return this.userLogic.getUsersByCompanyId(id, token);
     }
 
     @PostMapping("/login")

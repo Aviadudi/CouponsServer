@@ -7,11 +7,16 @@ import com.aviad.coupons.dal.IUsersDal;
 import com.aviad.coupons.dto.User;
 import com.aviad.coupons.entities.UserEntity;
 import com.aviad.coupons.enums.ErrorType;
+import com.aviad.coupons.enums.UserType;
 import com.aviad.coupons.exceptions.ApplicationException;
 import com.aviad.coupons.utils.EncryptUtils;
 import com.aviad.coupons.utils.JWTUtils;
+import com.aviad.coupons.utils.TokenDecodedDataUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -56,11 +61,19 @@ public class UserLogic {
         this.usersDal.save(userEntity);
     }
 
-    public List<User> getAllUsers() throws ApplicationException {
+    public List<User> getAllUsers(String token) throws ApplicationException {
+        if (!isAdmin(token)) {
+            return Collections.emptyList();
+        }
         return this.usersDal.getUsers();
     }
 
-    public List<User> getUsersByCompanyId(int id) throws ApplicationException{
+    public List<User> getUsersByCompanyId(int id, String token) throws ApplicationException {
+        // Validate that user from type Company can only request to see the users from his own company
+        if (isCompany(token)){
+            int userId = TokenDecodedDataUtil.decodedCompanyId(token);
+            id = userId;
+        }
         return this.usersDal.getUsersByCompanyId(id);
     }
 
@@ -73,7 +86,7 @@ public class UserLogic {
         userLoginData.setPassword(encryptedPassword);
 
         SuccessfulLoginDetails successfulLoginDetails = this.usersDal.login(userLoginData);
-        if (successfulLoginDetails == null){
+        if (successfulLoginDetails == null) {
             throw new ApplicationException(ErrorType.FAILED_LOGIN);
         }
         String token = JWTUtils.createJWT(successfulLoginDetails);
@@ -97,6 +110,7 @@ public class UserLogic {
             throw new ApplicationException(ErrorType.INVALID_PASSWORD);
         }
     }
+
     private void validateUserEmail(String email) throws ApplicationException {
         String emailRegex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
                 + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
@@ -116,5 +130,28 @@ public class UserLogic {
         if (username.length() > 15) {
             throw new ApplicationException(ErrorType.USERNAME_TOO_LONG);
         }
+    }
+
+    public User getUserByToken(String token) throws ApplicationException {
+        SuccessfulLoginDetails successfulLoginDetails;
+        try {
+            String tokenWithoutBearer = JWTUtils.getTokenWithoutBearer(token);
+            Claims claims = JWTUtils.decodeJWTClaims(tokenWithoutBearer);
+            ObjectMapper objectMapper = new ObjectMapper();
+            successfulLoginDetails = objectMapper.readValue(claims.getSubject(), SuccessfulLoginDetails.class);
+        } catch (Exception e) {
+            throw new ApplicationException(ErrorType.GENERAL_ERROR, ErrorType.GENERAL_ERROR.getErrorMessage(), e);
+        }
+        int userId = successfulLoginDetails.getId();
+        User user = getUser(userId);
+        return user;
+    }
+    private boolean isAdmin(String token) throws ApplicationException {
+        UserType userType = TokenDecodedDataUtil.decodedUserType(token);
+        return userType.equals(UserType.ADMIN);
+    }
+    private boolean isCompany(String token) throws ApplicationException {
+        UserType userType = TokenDecodedDataUtil.decodedUserType(token);
+        return userType.equals(UserType.COMPANY);
     }
 }

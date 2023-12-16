@@ -56,7 +56,7 @@ public class PurchasesController {
 
     // Get all purchases by user id
     @GetMapping("/byUserId")
-    public List<Purchase> getPurchasesByUserId(@RequestParam("id") long id) throws ApplicationException {
+    public List<Purchase> getPurchasesByUserId(@RequestParam("id") int id) throws ApplicationException {
         return this.purchaseLogic.getPurchasesByUserId(id);
     }
 

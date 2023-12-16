@@ -31,6 +31,9 @@ public class CouponEntity {
     @Column(name = "price", nullable = false)
     private float price;
 
+    @Column(name="image_data", nullable = true, columnDefinition = "LONGBLOB")
+    private byte[] imageData;
+
     // Foreign key to users
     @ManyToOne (fetch = FetchType.LAZY)
     private UserEntity user;
@@ -63,6 +66,7 @@ public class CouponEntity {
         this.company.setId(coupon.getCompanyId());
         this.user = new UserEntity();
         this.user.setId(coupon.getUserId());
+        this.imageData = coupon.getImageData();
     }
 
     public Integer getId() {
@@ -143,6 +147,14 @@ public class CouponEntity {
 
     public void setCompany(CompanyEntity company) {
         this.company = company;
+    }
+
+    public byte[] getImageData() {
+        return imageData;
+    }
+
+    public void setImageData(byte[] imageData) {
+        this.imageData = imageData;
     }
 
     public List<PurchaseEntity> getPurchases() {

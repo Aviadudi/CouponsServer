@@ -84,7 +84,7 @@ public class PurchaseLogic {
         return this.purchasesDal.getPurchasesByCompanyId(id);
     }
 
-    public List<Purchase> getPurchasesByUserId(long id) throws ApplicationException {
+    public List<Purchase> getPurchasesByUserId(int id) throws ApplicationException {
         return this.purchasesDal.getPurchasesByUserId(id);
     }
 

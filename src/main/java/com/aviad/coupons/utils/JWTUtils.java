@@ -86,7 +86,7 @@ public class JWTUtils {
         Claims claims = decodeJWTClaims(tokenWithoutBearer);
     }
 
-    private static String getTokenWithoutBearer(String token){
+    public static String getTokenWithoutBearer(String token){
         String[] textSegments = token.split(" ");
         String tokenWithoutBearer = textSegments[1];
         return tokenWithoutBearer;

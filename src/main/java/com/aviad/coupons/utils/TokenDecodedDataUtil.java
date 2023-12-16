@@ -5,6 +5,10 @@ import com.aviad.coupons.enums.UserType;
 import com.aviad.coupons.exceptions.ApplicationException;
 
 public class TokenDecodedDataUtil {
+    public static SuccessfulLoginDetails decodedUserData(String token) throws ApplicationException {
+        SuccessfulLoginDetails successfulLoginDetails = JWTUtils.decodeJWT(token);
+        return successfulLoginDetails;
+    }
     public static int decodedUserId(String token) throws ApplicationException {
         SuccessfulLoginDetails successfulLoginDetails = JWTUtils.decodeJWT(token);
         int userId = successfulLoginDetails.getId();

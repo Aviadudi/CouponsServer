@@ -1,6 +1,7 @@
 package com.aviad.coupons.logic;
 
 
+import com.aviad.coupons.beans.SuccessfulLoginDetails;
 import com.aviad.coupons.dal.ICouponsDal;
 import com.aviad.coupons.dto.Coupon;
 import com.aviad.coupons.dto.User;
@@ -27,14 +28,19 @@ public class CouponLogic {
     public Integer addCoupon(Coupon coupon, String token) throws ApplicationException {
         UserType userType = TokenDecodedDataUtil.decodedUserType(token);
 
-        if (userType == UserType.CUSTOMER){
+        if (userType == UserType.CUSTOMER) {
             throw new ApplicationException(ErrorType.UNAUTHORIZED_TO_ADD_COUPON);
         }
-
-        int companyId = TokenDecodedDataUtil.decodedCompanyId(token);
         int userId = TokenDecodedDataUtil.decodedUserId(token);
 
-        coupon.setCompanyId(companyId);
+        if (userType == UserType.COMPANY) {
+             int companyId = TokenDecodedDataUtil.decodedCompanyId(token);
+            coupon.setCompanyId(companyId);
+        }
+        else {
+            // mean you are admin
+            coupon.setCompanyId(coupon.getCompanyId());
+        }
         coupon.setUserId(userId);
 
         validateCouponData(coupon);
@@ -49,33 +55,38 @@ public class CouponLogic {
         return this.couponsDal.getCoupon(id);
     }
 
-    public Coupon getCouponData(Integer id){
+    public Coupon getCouponData(Integer id) {
         CouponEntity couponEntity = couponsDal.findById(id).get();
         Coupon coupon = new Coupon(couponEntity);
         return coupon;
     }
 
-    public void deleteCoupon(Integer id,String token) throws ApplicationException {
+    public void deleteCoupon(Integer id, String token) throws ApplicationException {
+        System.out.println();
         validateUserPermissionToDelete(id, token);
         this.couponsDal.deleteById(id);
     }
 
 
-
     public void updateCoupon(Coupon coupon, String token) throws ApplicationException {
-        UserType userType = TokenDecodedDataUtil.decodedUserType(token);
+        SuccessfulLoginDetails userData = TokenDecodedDataUtil.decodedUserData(token);
+        Coupon oldCoupon = getCouponData(coupon.getId());
 
-        if (userType == UserType.CUSTOMER){
+        if (userData.getUserType() == UserType.CUSTOMER || userData.getUserType() == UserType.COMPANY && userData.getCompanyId() != coupon.getCompanyId()) {
             throw new ApplicationException(ErrorType.UNAUTHORIZED_TO_UPDATE_COUPON);
+        } else if (userData.getUserType() == UserType.COMPANY) {
+            coupon.setUserId((userData.getId()));
+        } else {
+            coupon.setUserId(oldCoupon.getUserId());
         }
 
-        int companyId = TokenDecodedDataUtil.decodedCompanyId(token);
-        int userId = TokenDecodedDataUtil.decodedUserId(token);
+        coupon.setCompanyId(oldCoupon.getCompanyId());
+        coupon.setId(oldCoupon.getId());
+//        coupon.setName(oldCoupon.getName());
+//        coupon.setCategoryId(oldCoupon.getCategoryId());
 
-
-        coupon.setCompanyId(companyId);
-        coupon.setUserId(userId);
-
+//        Date now = new Date();
+//        System.out.println();
         validateCouponData(coupon);
         CouponEntity couponEntity = new CouponEntity(coupon);
         this.couponsDal.save(couponEntity);
@@ -97,15 +108,32 @@ public class CouponLogic {
     }
 
     public List<Coupon> getAllCoupons() throws ApplicationException {
-        return this.couponsDal.getCoupons();
+        return getAllAvailableCoupons();
     }
 
-        public List<Coupon> getCouponsByMaxPrice(float maxPrice) throws ApplicationException {
+    public List<Coupon> getAllCouponsAccordingUserType(String token) throws ApplicationException {
+        SuccessfulLoginDetails successfulLoginDetails = TokenDecodedDataUtil.decodedUserData(token);
+        UserType userType = successfulLoginDetails.getUserType();
+
+        if (userType == UserType.ADMIN) {
+            return this.couponsDal.getCoupons();
+        } else if (userType == UserType.COMPANY) {
+            int companyId = successfulLoginDetails.getCompanyId();
+            return getCouponsByCompanyId(companyId);
+        }
+        return getAllAvailableCoupons();
+    }
+
+    public List<Coupon> getAllAvailableCoupons() throws ApplicationException {
+        return this.couponsDal.getAvailableCoupons(new Date());
+    }
+
+    public List<Coupon> getCouponsByMaxPrice(float maxPrice) throws ApplicationException {
         validateCouponPrice(maxPrice);
         return this.couponsDal.getCouponsByMaxPrice(maxPrice);
     }
 
-    public List<Coupon> getCouponsByCompanyId(int companyId) throws ApplicationException{
+    public List<Coupon> getCouponsByCompanyId(int companyId) throws ApplicationException {
         return this.couponsDal.getCouponsByCompanyId(companyId);
     }
 
@@ -118,17 +146,19 @@ public class CouponLogic {
         validateCouponDescription(coupon.getDescription());
         validateCouponPrice(coupon.getPrice());
         validateCouponAmount(coupon.getAmount());
+        System.out.println();
         validateCouponDate(coupon.getStartDate(), coupon.getEndDate());
     }
 
     private void validateCouponDate(Date startDate, Date endDate) throws ApplicationException {
-        Date currentDate = new Date();
-        if (currentDate.after(startDate)) {
-            throw new ApplicationException(ErrorType.INVALID_COUPON_START_DATE, ErrorType.INVALID_COUPON_START_DATE.getErrorMessage());
-        }
-        if (currentDate.after(endDate)) {
-            throw new ApplicationException(ErrorType.INVALID_COUPON_END_DATE, ErrorType.INVALID_COUPON_END_DATE.getErrorMessage());
-        }
+        System.out.println();
+//        Date currentDate = new Date();
+//        if (currentDate.after(startDate )) {
+//            throw new ApplicationException(ErrorType.INVALID_COUPON_START_DATE, ErrorType.INVALID_COUPON_START_DATE.getErrorMessage());
+//        }
+//        if (currentDate.after(endDate)) {
+//            throw new ApplicationException(ErrorType.INVALID_COUPON_END_DATE, ErrorType.INVALID_COUPON_END_DATE.getErrorMessage());
+//        }
         if (endDate.before(startDate)) {
             throw new ApplicationException(ErrorType.INVALID_COUPON_DATE_ORDER, ErrorType.INVALID_COUPON_DATE_ORDER.getErrorMessage());
         }
@@ -144,7 +174,7 @@ public class CouponLogic {
         if (price <= 0) {
             throw new ApplicationException(ErrorType.COUPON_PRICE_TOO_LOW, ErrorType.COUPON_PRICE_TOO_LOW.getErrorMessage());
         }
-        if (price > 100) {
+        if (price > 5000) {
             throw new ApplicationException(ErrorType.COUPON_PRICE_TOO_HIGH, ErrorType.COUPON_PRICE_TOO_HIGH.getErrorMessage());
         }
     }
@@ -162,23 +192,24 @@ public class CouponLogic {
         if (couponName.length() < 4) {
             throw new ApplicationException(ErrorType.COUPON_NAME_TOO_SHORT, ErrorType.COUPON_NAME_TOO_SHORT.getErrorMessage());
         }
-        if (couponName.length() > 15) {
+        if (couponName.length() > 30) {
             throw new ApplicationException(ErrorType.COUPON_NAME_TOO_LONG, ErrorType.COUPON_NAME_TOO_LONG.getErrorMessage());
         }
     }
+
     // Validate if user is ADMIN or company user from the same company as the coupon
     private void validateUserPermissionToDelete(Integer id, String token) throws ApplicationException {
         int userId = TokenDecodedDataUtil.decodedUserId(token);
         User user = userLogic.getUser(userId);
-        if (user.getUserType().equals(UserType.CUSTOMER)){
+        if (user.getUserType().equals(UserType.CUSTOMER)) {
             throw new ApplicationException(ErrorType.UNAUTHORIZED_TO_DELETE_COUPON);
-        }
-
-        Coupon coupon = getCouponData(id);
-        int couponCompanyId = coupon.getCompanyId();
-        int userCompanyId = TokenDecodedDataUtil.decodedCompanyId(token);
-        if (userCompanyId != couponCompanyId){
-            throw new ApplicationException(ErrorType.UNAUTHORIZED_TO_DELETE_COUPON);
+        } else if (user.getUserType().equals(UserType.COMPANY)) {
+            Coupon coupon = getCouponData(id);
+            int couponCompanyId = coupon.getCompanyId();
+            int userCompanyId = TokenDecodedDataUtil.decodedCompanyId(token);
+            if (userCompanyId != couponCompanyId) {
+                throw new ApplicationException(ErrorType.UNAUTHORIZED_TO_DELETE_COUPON);
+            }
         }
     }
 }

@@ -27,6 +27,7 @@ public class CouponsController {
     // Update coupon
     @PutMapping
     public void updateCoupon(@RequestBody Coupon coupon, @RequestHeader("Authorization") String token) throws ApplicationException {
+        System.out.println();
         this.couponLogic.updateCoupon(coupon, token);
     }
 
@@ -36,11 +37,26 @@ public class CouponsController {
         return this.couponLogic.getAllCoupons();
     }
 
+    @GetMapping("/accordingUserType")
+    public List<Coupon> getCouponsAccordingUserType(@RequestHeader("Authorization") String token) throws ApplicationException {
+        return this.couponLogic.getAllCouponsAccordingUserType(token);
+    }
+    // Get all available coupons
+//    @GetMapping("/available")
+//    public List<Coupon> getAllAvailableCoupons() throws ApplicationException{
+//        return this.couponLogic.getAllAvailableCoupons();
+//    }
+
     // Get specific coupon
     @GetMapping("/{id}")
     public Coupon getCoupon(@PathVariable("id") Integer id) throws ApplicationException {
         return this.couponLogic.getCoupon(id);
     }
+
+//    @GetMapping("/couponData")
+//    public Coupon getCouponData(@RequestParam("id") Integer id) throws ApplicationException {
+//        return this.couponLogic.getCouponData(id);
+//    }
 
     // Delete specific coupon
     @DeleteMapping("/{id}")

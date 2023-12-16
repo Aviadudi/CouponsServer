@@ -12,6 +12,7 @@ com\aviad\coupons\enums\ErrorType.class
 com\aviad\coupons\tests\UsersTests.class
 com\aviad\coupons\controllers\CouponsController.class
 com\aviad\coupons\tests\PurchasesTests.class
+com\aviad\coupons\utils\EncryptUtils.class
 com\aviad\coupons\dto\Purchase.class
 com\aviad\coupons\controllers\CategoriesController.class
 com\aviad\coupons\utils\JDBCUtils.class
@@ -19,7 +20,9 @@ com\aviad\coupons\utils\StatisticsUtils.class
 com\aviad\coupons\dto\Category.class
 com\aviad\coupons\exceptions\ApplicationException.class
 com\aviad\coupons\dal\IPurchasesDal.class
+com\aviad\coupons\filters\LoginFilter.class
 com\aviad\coupons\beans\UserLoginData.class
+com\aviad\coupons\dto\ErrorBean.class
 com\aviad\coupons\Main.class
 com\aviad\coupons\enums\UserType.class
 com\aviad\coupons\threads\SendStatisticsThread.class
@@ -30,11 +33,14 @@ com\aviad\coupons\controllers\PurchasesController.class
 com\aviad\coupons\dal\IUsersDal.class
 com\aviad\coupons\dto\Company.class
 com\aviad\coupons\controllers\UsersController.class
+com\aviad\coupons\exceptions\ExceptionsHandler.class
 com\aviad\coupons\logic\PurchaseLogic.class
 com\aviad\coupons\tests\CompaniesTests.class
 com\aviad\coupons\consts\Consts.class
+com\aviad\coupons\filters\CORSFilter.class
 com\aviad\coupons\logic\CouponLogic.class
 com\aviad\coupons\logic\UserLogic.class
+com\aviad\coupons\utils\TokenDecodedDataUtil.class
 com\aviad\coupons\entities\UserEntity.class
 com\aviad\coupons\tests\CouponsTests.class
 com\aviad\coupons\utils\JWTUtils.class

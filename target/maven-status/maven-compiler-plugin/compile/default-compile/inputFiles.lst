@@ -1,4 +1,5 @@
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\dto\Category.java
+C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\exceptions\ExceptionsHandler.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\Main.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\tests\CategoriesTests.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\threads\SendStatisticsThread.java
@@ -6,10 +7,12 @@ C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\av
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\tasks\ExpiredCouponsTask.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\dto\Purchase.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\entities\CategoryEntity.java
+C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\dto\ErrorBean.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\dal\ICompaniesDal.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\exceptions\ApplicationException.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\beans\UserLoginData.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\enums\ErrorType.java
+C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\utils\EncryptUtils.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\controllers\PurchasesController.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\dal\ICouponsDal.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\dal\IPurchasesDal.java
@@ -17,11 +20,13 @@ C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\av
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\consts\Consts.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\controllers\CompaniesController.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\dal\ICategoriesDal.java
+C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\filters\LoginFilter.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\beans\SuccessfulLoginDetails.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\entities\CompanyEntity.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\dal\IUsersDal.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\logic\CategoryLogic.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\tests\UsersTests.java
+C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\utils\TokenDecodedDataUtil.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\entities\UserEntity.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\controllers\CouponsController.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\enums\UserType.java
@@ -31,6 +36,7 @@ C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\av
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\entities\CouponEntity.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\controllers\UsersController.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\utils\JWTUtils.java
+C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\filters\CORSFilter.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\logic\CouponLogic.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\logic\CompanyLogic.java
 C:\Users\mor21\Desktop\Aviad-Studies\Project\Coupons-Phase2\src\main\java\com\aviad\coupons\logic\UserLogic.java

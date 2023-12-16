@@ -17,6 +17,8 @@ public class Coupon {
     private String companyName;
     private int companyId;
     private String userName;
+    private byte[] imageData;
+//    private MultipartFile image;
     private int userId;
     private float price;
 
@@ -24,7 +26,7 @@ public class Coupon {
     public Coupon() {
     }
 
-    public Coupon(int id, String name, String description, Date startDate, Date endDate, int amount, String categoryName, short categoryId, String companyName, int companyId, String userName, int userId, float price) {
+    public Coupon(int id, String name, String description, Date startDate, Date endDate, int amount, String categoryName, short categoryId, String companyName, int companyId, String userName, int userId, float price, byte[] imageData) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -38,23 +40,24 @@ public class Coupon {
         this.userName = userName;
         this.userId = userId;
         this.price = price;
+        this.imageData = imageData;
     }
 
     // Ctor for export data from DB
-    public Coupon(int id, String name, String description, Date startDate, Date endDate, int amount, short categoryId, int companyId, int userId, float price) {
-        this(id, name, description, startDate, endDate, amount, null, categoryId, null, companyId, null, userId, price);
+    public Coupon(int id, String name, String description, Date startDate, Date endDate, int amount, short categoryId, int companyId, int userId, float price, byte[] imageData) {
+        this(id, name, description, startDate, endDate, amount, null, categoryId, null, companyId, null, userId, price, imageData);
     }
 
 
     //Ctor for export data to client from DB
-    public Coupon(int id, String name, String description, java.util.Date startDate, java.util.Date endDate, int amount, String categoryName, String companyName, String userName, float price) {
-        this(id, name, description, startDate, endDate, amount, categoryName, (short) 0, companyName, 0, userName, 0, price);
+    public Coupon(int id, String name, String description, java.util.Date startDate, java.util.Date endDate, int amount, String categoryName, String companyName, String userName, float price, byte[] imageData) {
+        this(id, name, description, startDate, endDate, amount, categoryName, (short) 0, companyName, 0, userName, 0, price, imageData);
     }
 
 
     // Ctor for insert data to DB
-    public Coupon(String name, String description, Date startDate, Date endDate, int amount, short categoryId, int companyId, int userId, float price) {
-        this(0, name, description, startDate, endDate, amount, null, categoryId, null, companyId, null, userId, price);
+    public Coupon(String name, String description, Date startDate, Date endDate, int amount, short categoryId, int companyId, int userId, float price, byte[] imageData) {
+        this(0, name, description, startDate, endDate, amount, null, categoryId, null, companyId, null, userId, price, imageData);
     }
 
     public Coupon(CouponEntity couponEntity) {
@@ -70,7 +73,8 @@ public class Coupon {
                 couponEntity.getCompany().getId(),
                 couponEntity.getUser().getUsername(),
                 couponEntity.getUser().getId(),
-                couponEntity.getPrice());
+                couponEntity.getPrice(),
+                couponEntity.getImageData());
     }
 
     public int getId() {
@@ -176,6 +180,22 @@ public class Coupon {
     public void setPrice(float price) {
         this.price = price;
     }
+
+    public byte[] getImageData() {
+        return imageData;
+    }
+
+    public void setImageData(byte[] imageData) {
+        this.imageData = imageData;
+    }
+
+//    public MultipartFile getImage() {
+//        return image;
+//    }
+
+//    public void setImage(MultipartFile image) {
+//        this.image = image;
+//    }
 
     @Override
     public String toString() {
