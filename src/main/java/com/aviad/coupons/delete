@@ -1,0 +1,44 @@
+//package com.aviad.coupons;
+//
+//import com.aviad.coupons.dto.Coupon;
+//import org.springframework.web.bind.annotation.PostMapping;
+//import org.springframework.web.bind.annotation.RequestBody;
+//import org.springframework.web.multipart.MultipartFile;
+//
+//import java.io.IOException;
+//
+//public class delete {
+//
+//    @PostMapping("/coupon")
+//    public Coupon createCoupon(@RequestBody Coupon coupon) throws IOException {
+//
+//        // לקבל את האובייקט Coupon שנשלח בבקשה
+//
+//        // לחלץ את הקובץ מהשדה image
+//        MultipartFile image = coupon.getImage();
+//
+//        String fileName = image.getOriginalFilename();
+//
+//        String newFileName = new Date().getTime() + "-" + fileName;
+//
+//        String filePath = "/uploads/" + newFileName;
+//
+//        image.transferTo(new File(filePath));
+//
+//        // עדכון שדה ה image באובייקט עם הנתיב החדש
+//        coupon.setImage(filePath);
+//
+//        // שמירת שאר הנתונים של הקופון
+//        // במסד הנתונים
+//        saveCoupon(coupon);
+//
+//        return coupon;
+//    }
+//
+//    public void saveCoupon(Coupon coupon) {
+//
+//        // שמירת כל נתוני הקופון כולל הנתיב לתמונה
+//        // במסד נתונים
+//    }
+//
+//}
