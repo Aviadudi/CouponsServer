@@ -29,7 +29,7 @@ public class UserLogic {
     }
 
     public void addUser(User user) throws ApplicationException {
-        validateUserData(user);
+        validateNewUserData(user);
         String originalPassword = user.getPassword();
         String encryptedPassword = EncryptUtils.encryptPassword(originalPassword);
         user.setPassword(encryptedPassword);
@@ -37,6 +37,15 @@ public class UserLogic {
         this.usersDal.save(userEntity);
     }
 
+    public void addUserAdmin(User user, String token) throws ApplicationException {
+        UserType senderUserType = TokenDecodedDataUtil.decodedUserType(token);
+        if (senderUserType == UserType.ADMIN){
+            if (user.getCompanyId()==0){
+                user.setCompanyId(null);
+            }
+            addUser(user);
+        }
+    }
     public User getUser(int id) throws ApplicationException {
         return this.usersDal.getUser(id);
     }
@@ -46,17 +55,48 @@ public class UserLogic {
     }
 
     public void updateUser(User user, String token) throws ApplicationException {
-        validateUserData(user);
+        UserType senderUserType = TokenDecodedDataUtil.decodedUserType(token);
+        if (senderUserType == UserType.ADMIN) {
+            if (user.getPassword().equals("")) {
+//                User oldUserData = getUser(user.getId());
+//                String originalPassword = oldUserData.getPassword();
+                String originalPassword = this.usersDal.getPasswordByUserId(user.getId());
+                user.setPassword(originalPassword);
+                validateUpdatedUserData(user);
+            } else {
+                validateNewUserData(user);
+                String encryptedPassword = EncryptUtils.encryptPassword(user.getPassword());
+                user.setPassword(encryptedPassword);
+            }
 
-        String originalPassword = user.getPassword();
-        String encryptedPassword = EncryptUtils.encryptPassword(originalPassword);
-        user.setPassword(encryptedPassword);
+            if (user.getCompanyId() == 0){
+                user.setCompanyId(null);
+            }
 
-        SuccessfulLoginDetails successfulLoginDetails = JWTUtils.decodeJWT(token);
-        user.setId(successfulLoginDetails.getId());
-        user.setUserType(successfulLoginDetails.getUserType());
-        user.setCompanyId(successfulLoginDetails.getCompanyId());
 
+
+//            System.out.println();
+//
+//            String originalPassword = user.getPassword();
+//            String encryptedPassword = EncryptUtils.encryptPassword(originalPassword);
+//            user.setPassword(encryptedPassword);
+//
+//            SuccessfulLoginDetails successfulLoginDetails = JWTUtils.decodeJWT(token);
+//            user.setId(successfulLoginDetails.getId());
+//            user.setUserType(successfulLoginDetails.getUserType());
+//            user.setCompanyId(successfulLoginDetails.getCompanyId());
+        }
+        if (senderUserType == UserType.COMPANY || senderUserType == UserType.CUSTOMER){
+            validateUserPassword(user.getPassword());
+            String newPassword = user.getPassword();
+            String encryptedPassword = EncryptUtils.encryptPassword(newPassword);
+            user.setPassword(encryptedPassword);
+            //extract user data from token and not from user sent data
+            SuccessfulLoginDetails successfulLoginDetails = JWTUtils.decodeJWT(token);
+            user.setId(successfulLoginDetails.getId());
+            user.setUserType(successfulLoginDetails.getUserType());
+            user.setCompanyId(successfulLoginDetails.getCompanyId());
+        }
         UserEntity userEntity = new UserEntity(user);
         this.usersDal.save(userEntity);
     }
@@ -70,7 +110,7 @@ public class UserLogic {
 
     public List<User> getUsersByCompanyId(int id, String token) throws ApplicationException {
         // Validate that user from type Company can only request to see the users from his own company
-        if (isCompany(token)){
+        if (isCompany(token)) {
             int userId = TokenDecodedDataUtil.decodedCompanyId(token);
             id = userId;
         }
@@ -93,12 +133,16 @@ public class UserLogic {
         return token;
     }
 
-    private void validateUserData(User user) throws ApplicationException {
+    private void validateNewUserData(User user) throws ApplicationException {
         validateUserName(user.getUsername());
         validateUserPassword(user.getPassword());
         validateUserEmail(user.getEmail());
     }
 
+    private void validateUpdatedUserData(User user) throws ApplicationException {
+        validateUserName(user.getUsername());
+        validateUserEmail(user.getEmail());
+    }
 
     private void validateUserPassword(String password) throws ApplicationException {
         String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,12}$";
@@ -146,10 +190,12 @@ public class UserLogic {
         User user = getUser(userId);
         return user;
     }
+
     private boolean isAdmin(String token) throws ApplicationException {
         UserType userType = TokenDecodedDataUtil.decodedUserType(token);
         return userType.equals(UserType.ADMIN);
     }
+
     private boolean isCompany(String token) throws ApplicationException {
         UserType userType = TokenDecodedDataUtil.decodedUserType(token);
         return userType.equals(UserType.COMPANY);

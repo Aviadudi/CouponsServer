@@ -37,6 +37,11 @@ public class UsersController {
         return this.userLogic.getAllUsers(token);
     }
 
+    @PostMapping("/admin")
+    public void createUserAdmin(@RequestBody User user, @RequestHeader("Authorization") String token) throws ApplicationException {
+        this.userLogic.addUserAdmin(user,token);
+    }
+
     // Get user
     @GetMapping("/{id}")
     public User getUser(@PathVariable("id") int id) throws ApplicationException {

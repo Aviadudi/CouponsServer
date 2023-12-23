@@ -26,4 +26,7 @@ public interface IUsersDal extends CrudRepository<UserEntity, Long> {
     @Query("SELECT new com.aviad.coupons.dto.User (u.id, u.username, u.email, u.userType, u.company.id)" +
             "FROM UserEntity u WHERE u.company.id = :id")
     List<User> getUsersByCompanyId(@Param("id") int id);
+
+    @Query("SELECT password From UserEntity u WHERE u.id = :id")
+    String getPasswordByUserId(@Param("id") int id);
 }
