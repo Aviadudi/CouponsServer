@@ -9,11 +9,14 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface ICategoriesDal extends CrudRepository<CategoryEntity,Short> {
+public interface ICategoriesDal extends CrudRepository<CategoryEntity,Integer> {
 
     @Query("SELECT new com.aviad.coupons.dto.Category (c.id, c.name) FROM CategoryEntity c")
     List<Category> getCategories();
 
     @Query("SELECT new com.aviad.coupons.dto.Category (c.id, c.name) FROM CategoryEntity c WHERE id = :id")
-    Category getCategoryById(@Param("id") short id);
+    Category getCategoryById(@Param("id") int id);
+
+    @Query("SELECT (c.id) FROM CategoryEntity c")
+    Integer[] getAllCategoryIds();
 }

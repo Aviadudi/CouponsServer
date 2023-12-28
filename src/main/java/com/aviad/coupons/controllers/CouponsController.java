@@ -1,6 +1,7 @@
 package com.aviad.coupons.controllers;
 
 import com.aviad.coupons.dto.Coupon;
+import com.aviad.coupons.dto.CouponsPagination;
 import com.aviad.coupons.exceptions.ApplicationException;
 import com.aviad.coupons.logic.CouponLogic;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,19 @@ public class CouponsController {
     public List<Coupon> getCouponsAccordingUserType(@RequestHeader("Authorization") String token) throws ApplicationException {
         return this.couponLogic.getAllCouponsAccordingUserType(token);
     }
+
+    @GetMapping("/byFilters")
+    public CouponsPagination getCouponsByFilters(@RequestHeader("Authorization") String token,
+                                                 @RequestParam(value = "page") int page,
+                                                 @RequestParam(value = "categoryIds") int categoryIds,
+                                                 @RequestParam(value = "searchString",required = false) String searchString) throws ApplicationException {
+        CouponsPagination coupons =  this.couponLogic.getCouponsByFilters(token,page,categoryIds,searchString);
+        System.out.println();
+
+        return coupons;
+    }
+
+
     // Get all available coupons
 //    @GetMapping("/available")
 //    public List<Coupon> getAllAvailableCoupons() throws ApplicationException{
@@ -78,7 +92,7 @@ public class CouponsController {
 
     // Get all coupons by category id
     @GetMapping("/byCategoryId")
-    public List<Coupon> getCouponsByCategoryId(@RequestParam("id") short id) throws ApplicationException {
+    public List<Coupon> getCouponsByCategoryId(@RequestParam("id") int id) throws ApplicationException {
         return this.couponLogic.getCouponsByCategoryId(id);
     }
 }

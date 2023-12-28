@@ -31,5 +31,5 @@ public interface IPurchasesDal extends CrudRepository<PurchaseEntity, Long> {
 
     @Query("SELECT new com.aviad.coupons.dto.Purchase (p.id, p.amount, p.purchaseDate, p.user.id, p.coupon.name, p.company.name, p.price)" +
             "FROM PurchaseEntity p INNER JOIN p.coupon c WHERE c.category.id = :id")
-    List<Purchase> getPurchasesByCategoryId(@Param("id") short id);
+    List<Purchase> getPurchasesByCategoryId(@Param("id") int id);
 }

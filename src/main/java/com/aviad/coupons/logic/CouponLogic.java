@@ -2,14 +2,19 @@ package com.aviad.coupons.logic;
 
 
 import com.aviad.coupons.beans.SuccessfulLoginDetails;
+import com.aviad.coupons.dal.ICategoriesDal;
 import com.aviad.coupons.dal.ICouponsDal;
 import com.aviad.coupons.dto.Coupon;
+import com.aviad.coupons.dto.CouponsPagination;
 import com.aviad.coupons.dto.User;
 import com.aviad.coupons.entities.CouponEntity;
 import com.aviad.coupons.enums.ErrorType;
 import com.aviad.coupons.enums.UserType;
 import com.aviad.coupons.exceptions.ApplicationException;
 import com.aviad.coupons.utils.TokenDecodedDataUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -19,10 +24,12 @@ import java.util.List;
 public class CouponLogic {
     private ICouponsDal couponsDal;
     private UserLogic userLogic;
+    private ICategoriesDal categoriesDal;
 
-    public CouponLogic(ICouponsDal couponsDal, UserLogic userLogic) {
+    public CouponLogic(ICouponsDal couponsDal, UserLogic userLogic, ICategoriesDal categoriesDal) {
         this.couponsDal = couponsDal;
         this.userLogic = userLogic;
+        this.categoriesDal = categoriesDal;
     }
 
     public Integer addCoupon(Coupon coupon, String token) throws ApplicationException {
@@ -124,6 +131,56 @@ public class CouponLogic {
         return getAllAvailableCoupons();
     }
 
+    public CouponsPagination getCouponsByFilters(String token, int page, int categoryIds, String searchString) throws ApplicationException {
+        UserType userType = extractUserType(token);
+//        searchString = searchString.toLowerCase();
+
+        int couponsPerPage = 2;
+//        page = 0;
+//        int categoryIdss = 3;
+        Pageable pageable = PageRequest.of(page-1, couponsPerPage);
+        Page<Coupon> DBcouponsResponse;
+
+        if (categoryIds == -1){
+            DBcouponsResponse =  this.couponsDal.getAllCouponsWithPagination(pageable);
+
+        }else {
+            DBcouponsResponse = this.couponsDal.getByFilters(categoryIds, pageable);
+        }
+//        if (categoryIds.length == 0){
+//            categoryIds = this.categoriesDal.getAllCategoryIds();
+//        }
+
+//        if (userType == UserType.ADMIN) {
+//            return this.couponsDal.getCoupons();
+//            List<Coupon>content = coupons.getContent();
+//            System.out.println();
+//            return coupons;
+//        }
+
+//        else if (userType == UserType.COMPANY) {
+//            int companyId = successfulLoginDetails.getCompanyId();
+//            return getCouponsByCompanyId(companyId);
+//        }
+//        return getAllAvailableCoupons();
+
+        int pages = DBcouponsResponse.getTotalPages();
+        List<Coupon> coupons = DBcouponsResponse.getContent();
+        System.out.println();
+        CouponsPagination couponsPagination = new CouponsPagination(coupons, pages);
+        return couponsPagination;
+    }
+
+    private UserType extractUserType(String token) throws ApplicationException {
+        if (token == null){
+            return UserType.CUSTOMER;
+        }else {
+            SuccessfulLoginDetails successfulLoginDetails = TokenDecodedDataUtil.decodedUserData(token);
+            UserType userType = successfulLoginDetails.getUserType();
+            return userType;
+        }
+    }
+
     public List<Coupon> getAllAvailableCoupons() throws ApplicationException {
         return this.couponsDal.getAvailableCoupons(new Date());
     }
@@ -137,7 +194,7 @@ public class CouponLogic {
         return this.couponsDal.getCouponsByCompanyId(companyId);
     }
 
-    public List<Coupon> getCouponsByCategoryId(short categoryId) throws ApplicationException {
+    public List<Coupon> getCouponsByCategoryId(int categoryId) throws ApplicationException {
         return this.couponsDal.getCouponsByCategoryId(categoryId);
     }
 

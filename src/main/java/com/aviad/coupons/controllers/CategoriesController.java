@@ -38,13 +38,13 @@ public class CategoriesController {
 
     // Get specific category by id
     @GetMapping("/{id}")
-    public Category getCategory(@PathVariable("id") short id) throws ApplicationException {
+    public Category getCategory(@PathVariable("id") int id) throws ApplicationException {
         return this.categoryLogic.getCategory(id);
     }
 
     // Delete specific category by id
     @DeleteMapping("/{id}")
-    public void deleteCategory(@PathVariable("id") short id) throws ApplicationException {
+    public void deleteCategory(@PathVariable("id") int id) throws ApplicationException {
         this.categoryLogic.deleteCategory(id);
     }
 }

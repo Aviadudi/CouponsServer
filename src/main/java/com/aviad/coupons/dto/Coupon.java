@@ -13,7 +13,7 @@ public class Coupon {
     private Date endDate;
     private int amount;
     private String categoryName;
-    private short categoryId;
+    private int categoryId;
     private String companyName;
     private int companyId;
     private String userName;
@@ -26,7 +26,7 @@ public class Coupon {
     public Coupon() {
     }
 
-    public Coupon(int id, String name, String description, Date startDate, Date endDate, int amount, String categoryName, short categoryId, String companyName, int companyId, String userName, int userId, float price, byte[] imageData) {
+    public Coupon(int id, String name, String description, Date startDate, Date endDate, int amount, String categoryName, int categoryId, String companyName, int companyId, String userName, int userId, float price, byte[] imageData) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -44,19 +44,19 @@ public class Coupon {
     }
 
     // Ctor for export data from DB
-    public Coupon(int id, String name, String description, Date startDate, Date endDate, int amount, short categoryId, int companyId, int userId, float price, byte[] imageData) {
+    public Coupon(int id, String name, String description, Date startDate, Date endDate, int amount, int categoryId, int companyId, int userId, float price, byte[] imageData) {
         this(id, name, description, startDate, endDate, amount, null, categoryId, null, companyId, null, userId, price, imageData);
     }
 
 
     //Ctor for export data to client from DB
     public Coupon(int id, String name, String description, java.util.Date startDate, java.util.Date endDate, int amount, String categoryName, String companyName, String userName, float price, byte[] imageData) {
-        this(id, name, description, startDate, endDate, amount, categoryName, (short) 0, companyName, 0, userName, 0, price, imageData);
+        this(id, name, description, startDate, endDate, amount, categoryName, (int) 0, companyName, 0, userName, 0, price, imageData);
     }
 
 
     // Ctor for insert data to DB
-    public Coupon(String name, String description, Date startDate, Date endDate, int amount, short categoryId, int companyId, int userId, float price, byte[] imageData) {
+    public Coupon(String name, String description, Date startDate, Date endDate, int amount, int categoryId, int companyId, int userId, float price, byte[] imageData) {
         this(0, name, description, startDate, endDate, amount, null, categoryId, null, companyId, null, userId, price, imageData);
     }
 
@@ -133,11 +133,11 @@ public class Coupon {
         this.categoryName = categoryName;
     }
 
-    public short getCategoryId() {
+    public int getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(short categoryId) {
+    public void setCategoryId(int categoryId) {
         this.categoryId = categoryId;
     }
 

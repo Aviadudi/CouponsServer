@@ -62,7 +62,7 @@ public class PurchasesController {
 
     // Get all purchases by category id
     @GetMapping("/byCategoryId")
-    public List<Purchase> getPurchasesByCategoryId(@RequestParam("id") short id) throws ApplicationException {
+    public List<Purchase> getPurchasesByCategoryId(@RequestParam("id") int id) throws ApplicationException {
         return this.purchaseLogic.getPurchasesByCategoryId(id);
     }
 }

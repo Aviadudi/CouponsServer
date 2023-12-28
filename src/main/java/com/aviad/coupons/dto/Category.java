@@ -3,7 +3,7 @@ package com.aviad.coupons.dto;
 import com.aviad.coupons.entities.CategoryEntity;
 
 public class Category {
-    private short id;
+    private int id;
     private String name;
 
 
@@ -14,7 +14,7 @@ public class Category {
         this.name = name;
     }
 
-    public Category(short id, String name) {
+    public Category(int id, String name) {
         this.name = name;
         this.id = id;
     }
@@ -24,11 +24,11 @@ public class Category {
         this.id = categoryEntity.getId();
     }
 
-    public short getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(short id) {
+    public void setId(int id) {
         this.id = id;
     }
 

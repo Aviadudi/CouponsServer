@@ -18,7 +18,7 @@ public class CategoryLogic {
         this.categoriesDal = categoriesDal;
     }
 
-    public Short addCategory(Category category) throws ApplicationException {
+    public int addCategory(Category category) throws ApplicationException {
         validateCategory(category);
         CategoryEntity categoryEntity = new CategoryEntity(category);
         this.categoriesDal.save(categoryEntity);
@@ -26,11 +26,11 @@ public class CategoryLogic {
         return category.getId();
     }
 
-    public Category getCategory(short id) throws ApplicationException {
+    public Category getCategory(int id) throws ApplicationException {
         return this.categoriesDal.getCategoryById(id);
     }
 
-    public void deleteCategory(short id) {
+    public void deleteCategory(int id) {
         this.categoriesDal.deleteById(id);
     }
 
