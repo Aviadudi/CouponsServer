@@ -21,15 +21,12 @@ public class PurchaseEntity {
     @Column(name = "total_price", nullable = false)
     private float price;
 
-    // Foreign key to company
     @ManyToOne (fetch = FetchType.LAZY)
     private CompanyEntity company;
 
-    // Foreign key to coupon
     @ManyToOne (fetch = FetchType.LAZY)
     private CouponEntity coupon;
 
-    // Foreign key to user
     @ManyToOne (fetch = FetchType.LAZY)
     private UserEntity user;
 

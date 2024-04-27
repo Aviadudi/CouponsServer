@@ -53,10 +53,20 @@ public class LoginFilter implements Filter {
         if (methodType.equals("get") && url.endsWith("/coupons")){
             return true;
         }
+        if (methodType.equals("get") && url.contains("/coupons/byfilters")){
+            return true;
+        }
         if (methodType.equals("get") && url.endsWith("/categories")){
             return true;
         }
         if (methodType.equals("get") && url.endsWith("/companies")){
+            return true;
+        }
+        if (methodType.equals("get") && url.endsWith("/coupons/minprice")){
+            return true;
+        }
+
+        if (methodType.equals("get") && url.endsWith("/coupons/maxprice")){
             return true;
         }
 

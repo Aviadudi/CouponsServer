@@ -5,7 +5,6 @@ import com.aviad.coupons.beans.SuccessfulLoginDetails;
 import com.aviad.coupons.dal.ICategoriesDal;
 import com.aviad.coupons.dal.ICouponsDal;
 import com.aviad.coupons.dto.Coupon;
-import com.aviad.coupons.dto.CouponsPagination;
 import com.aviad.coupons.dto.User;
 import com.aviad.coupons.entities.CouponEntity;
 import com.aviad.coupons.enums.ErrorType;
@@ -33,29 +32,32 @@ public class CouponLogic {
     }
 
     public Integer addCoupon(Coupon coupon, String token) throws ApplicationException {
-        UserType userType = TokenDecodedDataUtil.decodedUserType(token);
-
-        if (userType == UserType.CUSTOMER) {
-            throw new ApplicationException(ErrorType.UNAUTHORIZED_TO_ADD_COUPON);
-        }
-        int userId = TokenDecodedDataUtil.decodedUserId(token);
-
-        if (userType == UserType.COMPANY) {
-             int companyId = TokenDecodedDataUtil.decodedCompanyId(token);
-            coupon.setCompanyId(companyId);
-        }
-        else {
-            // mean you are admin
-            coupon.setCompanyId(coupon.getCompanyId());
-        }
-        coupon.setUserId(userId);
-
+        coupon = initiateCouponData(coupon, token);
         validateCouponData(coupon);
 
         CouponEntity couponEntity = new CouponEntity(coupon);
-        this.couponsDal.save(couponEntity);
+        couponEntity = this.couponsDal.save(couponEntity);
         coupon.setId(couponEntity.getId());
         return coupon.getId();
+    }
+
+    private Coupon initiateCouponData(Coupon coupon, String token) throws ApplicationException {
+        SuccessfulLoginDetails userData = TokenDecodedDataUtil.decodedUserData(token);
+        UserType userType = userData.getUserType();
+
+        if (userType == UserType.ADMIN) {
+            coupon.setCompanyId(coupon.getCompanyId());
+        }
+        if (userType == UserType.COMPANY) {
+            int companyId = userData.getCompanyId();
+            coupon.setCompanyId(companyId);
+        } else {
+            // mean you are customer
+            throw new ApplicationException(ErrorType.UNAUTHORIZED_TO_ADD_COUPON);
+        }
+        int userId = userData.getId();
+        coupon.setUserId(userId);
+        return coupon;
     }
 
     public Coupon getCoupon(Integer id) throws ApplicationException {
@@ -69,34 +71,37 @@ public class CouponLogic {
     }
 
     public void deleteCoupon(Integer id, String token) throws ApplicationException {
-        System.out.println();
         validateUserPermissionToDelete(id, token);
         this.couponsDal.deleteById(id);
     }
 
-
     public void updateCoupon(Coupon coupon, String token) throws ApplicationException {
-        SuccessfulLoginDetails userData = TokenDecodedDataUtil.decodedUserData(token);
-        Coupon oldCoupon = getCouponData(coupon.getId());
-
-        if (userData.getUserType() == UserType.CUSTOMER || userData.getUserType() == UserType.COMPANY && userData.getCompanyId() != coupon.getCompanyId()) {
-            throw new ApplicationException(ErrorType.UNAUTHORIZED_TO_UPDATE_COUPON);
-        } else if (userData.getUserType() == UserType.COMPANY) {
-            coupon.setUserId((userData.getId()));
-        } else {
-            coupon.setUserId(oldCoupon.getUserId());
-        }
-
-        coupon.setCompanyId(oldCoupon.getCompanyId());
-        coupon.setId(oldCoupon.getId());
-//        coupon.setName(oldCoupon.getName());
-//        coupon.setCategoryId(oldCoupon.getCategoryId());
-
-//        Date now = new Date();
-//        System.out.println();
+        coupon = initiateUpdatedCouponData(coupon, token);
         validateCouponData(coupon);
         CouponEntity couponEntity = new CouponEntity(coupon);
         this.couponsDal.save(couponEntity);
+    }
+
+    private Coupon initiateUpdatedCouponData(Coupon coupon, String token) throws ApplicationException {
+        SuccessfulLoginDetails userData = TokenDecodedDataUtil.decodedUserData(token);
+        Coupon oldCoupon = getCouponData(coupon.getId());
+        if (coupon.getCompanyId() == 0){
+            coupon.setCompanyId(oldCoupon.getCompanyId());
+        }
+        if (coupon.getCategoryId() == 0){
+            coupon.setCategoryId(oldCoupon.getCategoryId());
+        }
+        UserType userType = userData.getUserType();
+        if (userType == UserType.CUSTOMER || userType == UserType.COMPANY && userData.getCompanyId() != coupon.getCompanyId()) {
+            throw new ApplicationException(ErrorType.UNAUTHORIZED_TO_UPDATE_COUPON);
+        } else if (userType == UserType.COMPANY || coupon.getCompanyId()==0) {
+            coupon.setUserId((userData.getId()));
+            coupon.setCompanyId(oldCoupon.getCompanyId());
+        } else {
+            coupon.setUserId(oldCoupon.getUserId());
+        }
+        coupon.setId(oldCoupon.getId());
+        return coupon;
     }
 
     // update amount without insert data from token because every one can purchase the coupon
@@ -118,63 +123,48 @@ public class CouponLogic {
         return getAllAvailableCoupons();
     }
 
-    public List<Coupon> getAllCouponsAccordingUserType(String token) throws ApplicationException {
-        SuccessfulLoginDetails successfulLoginDetails = TokenDecodedDataUtil.decodedUserData(token);
-        UserType userType = successfulLoginDetails.getUserType();
+    public Page<Coupon> getCouponsByFilters(String token, int page, Integer[] categoryIds, String searchInput, float minPrice, float maxPrice) throws ApplicationException {
+        if (categoryIds[0] == -1 || !searchInput.equals("")) {
+            categoryIds = categoriesDal.getAllCategoryIds();
+        }
+        UserType userType;
+        if (token != null) {
+            userType = extractUserType(token);
+        } else {
+            userType = UserType.CUSTOMER;
+        }
 
+        int couponsPerPage;
+        if (userType == UserType.CUSTOMER) {
+            couponsPerPage = 5;
+        } else {
+            couponsPerPage = 4;
+        }
+
+        Pageable pageable = PageRequest.of(page - 1, couponsPerPage);
+        Page<Coupon> DBCouponsResponse;
+
+        // Admin
         if (userType == UserType.ADMIN) {
-            return this.couponsDal.getCoupons();
-        } else if (userType == UserType.COMPANY) {
-            int companyId = successfulLoginDetails.getCompanyId();
-            return getCouponsByCompanyId(companyId);
+            DBCouponsResponse = this.couponsDal.getByFiltersForAdmin(categoryIds, searchInput, minPrice, maxPrice, pageable);
         }
-        return getAllAvailableCoupons();
-    }
-
-    public CouponsPagination getCouponsByFilters(String token, int page, int categoryIds, String searchString) throws ApplicationException {
-        UserType userType = extractUserType(token);
-//        searchString = searchString.toLowerCase();
-
-        int couponsPerPage = 2;
-//        page = 0;
-//        int categoryIdss = 3;
-        Pageable pageable = PageRequest.of(page-1, couponsPerPage);
-        Page<Coupon> DBcouponsResponse;
-
-        if (categoryIds == -1){
-            DBcouponsResponse =  this.couponsDal.getAllCouponsWithPagination(pageable);
-
-        }else {
-            DBcouponsResponse = this.couponsDal.getByFilters(categoryIds, pageable);
+        // Company
+        else if (userType == UserType.COMPANY) {
+            int companyId = TokenDecodedDataUtil.decodedCompanyId(token);
+            DBCouponsResponse = this.couponsDal.getByFiltersForCompany(companyId, categoryIds, searchInput, minPrice, maxPrice, pageable);
         }
-//        if (categoryIds.length == 0){
-//            categoryIds = this.categoriesDal.getAllCategoryIds();
-//        }
+        // Customer
+        else {
+            DBCouponsResponse = this.couponsDal.getByFiltersForCustomer(new Date(), categoryIds, searchInput, minPrice, maxPrice, pageable);
+        }
 
-//        if (userType == UserType.ADMIN) {
-//            return this.couponsDal.getCoupons();
-//            List<Coupon>content = coupons.getContent();
-//            System.out.println();
-//            return coupons;
-//        }
-
-//        else if (userType == UserType.COMPANY) {
-//            int companyId = successfulLoginDetails.getCompanyId();
-//            return getCouponsByCompanyId(companyId);
-//        }
-//        return getAllAvailableCoupons();
-
-        int pages = DBcouponsResponse.getTotalPages();
-        List<Coupon> coupons = DBcouponsResponse.getContent();
-        System.out.println();
-        CouponsPagination couponsPagination = new CouponsPagination(coupons, pages);
-        return couponsPagination;
+        return DBCouponsResponse;
     }
 
     private UserType extractUserType(String token) throws ApplicationException {
-        if (token == null){
+        if (token == null) {
             return UserType.CUSTOMER;
-        }else {
+        } else {
             SuccessfulLoginDetails successfulLoginDetails = TokenDecodedDataUtil.decodedUserData(token);
             UserType userType = successfulLoginDetails.getUserType();
             return userType;
@@ -185,37 +175,15 @@ public class CouponLogic {
         return this.couponsDal.getAvailableCoupons(new Date());
     }
 
-    public List<Coupon> getCouponsByMaxPrice(float maxPrice) throws ApplicationException {
-        validateCouponPrice(maxPrice);
-        return this.couponsDal.getCouponsByMaxPrice(maxPrice);
-    }
-
-    public List<Coupon> getCouponsByCompanyId(int companyId) throws ApplicationException {
-        return this.couponsDal.getCouponsByCompanyId(companyId);
-    }
-
-    public List<Coupon> getCouponsByCategoryId(int categoryId) throws ApplicationException {
-        return this.couponsDal.getCouponsByCategoryId(categoryId);
-    }
-
     private void validateCouponData(Coupon coupon) throws ApplicationException {
         validateCouponName(coupon.getName());
         validateCouponDescription(coupon.getDescription());
         validateCouponPrice(coupon.getPrice());
         validateCouponAmount(coupon.getAmount());
-        System.out.println();
         validateCouponDate(coupon.getStartDate(), coupon.getEndDate());
     }
 
     private void validateCouponDate(Date startDate, Date endDate) throws ApplicationException {
-        System.out.println();
-//        Date currentDate = new Date();
-//        if (currentDate.after(startDate )) {
-//            throw new ApplicationException(ErrorType.INVALID_COUPON_START_DATE, ErrorType.INVALID_COUPON_START_DATE.getErrorMessage());
-//        }
-//        if (currentDate.after(endDate)) {
-//            throw new ApplicationException(ErrorType.INVALID_COUPON_END_DATE, ErrorType.INVALID_COUPON_END_DATE.getErrorMessage());
-//        }
         if (endDate.before(startDate)) {
             throw new ApplicationException(ErrorType.INVALID_COUPON_DATE_ORDER, ErrorType.INVALID_COUPON_DATE_ORDER.getErrorMessage());
         }
@@ -268,5 +236,25 @@ public class CouponLogic {
                 throw new ApplicationException(ErrorType.UNAUTHORIZED_TO_DELETE_COUPON);
             }
         }
+    }
+
+    public Float getMaxPrice() throws ApplicationException {
+        Float maxPrice;
+        try {
+            maxPrice = couponsDal.getMaxPrice();
+        } catch (Exception e) {
+            throw new ApplicationException(ErrorType.GENERAL_ERROR, "Failed to retrieve highest coupon price", e);
+        }
+        return maxPrice;
+    }
+
+    public Float getMinPrice() throws ApplicationException {
+        Float minPrice;
+        try {
+            minPrice = couponsDal.getMinPrice();
+        } catch (Exception e) {
+            throw new ApplicationException(ErrorType.GENERAL_ERROR, "Failed to retrieve lowest coupon price", e);
+        }
+        return minPrice;
     }
 }

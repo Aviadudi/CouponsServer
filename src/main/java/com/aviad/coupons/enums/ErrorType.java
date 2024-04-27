@@ -34,10 +34,10 @@ public enum ErrorType {
     INVALID_PURCHASE_AMOUNT(630,"INVALID PURCHASE AMOUNT", "Invalid purchase amount, can't be less than 1", false),
     INVALID_USER_ID(631,"INVALID USER ID", "Invalid user id, have to be positive number",false),
     INVALID_COUPON_ID(632,"INVALID COUPON_ID", "Invalid coupon id, have to be positive number",false),
-    FAILED_LOGIN(633,"FAILED LOGIN", "Failed login", false),
+    INCORRECT_USER_NAME_OR_PASSWORD(633,"INCORRECT USER NAME OR PASSWORD", "Incorrect username or password", false),
     INVALID_COUPON_AMOUNT_TO_PURCHASE(634,"INVALID COUPON AMOUNT TO PURCHASE", "Not enough coupons left to purchase", false),
     UNAUTHORIZED_TO_ADD_COUPON(635,"UNAUTHORIZED TO ADD COUPON", "Customers not allowed to add coupons", false),
-    UNAUTHORIZED_TO_UPDATE_COUPON(635,"UNAUTHORIZED TO UPDATE COUPON", "Customers not allowed to update coupons", false),
+    UNAUTHORIZED_TO_UPDATE_COUPON(635,"UNAUTHORIZED TO UPDATE COUPON", "You are not allowed to update this coupon", false),
     UNAUTHORIZED_TO_DELETE_COUPON(635,"UNAUTHORIZED TO DELETE COUPON", "You are not allowed to delete this coupon", false);
 
 

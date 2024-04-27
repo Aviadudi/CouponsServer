@@ -27,15 +27,12 @@ public class UserEntity {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    // Foreign key to company
     @ManyToOne(fetch = FetchType.LAZY)
     private CompanyEntity company;
 
-    // Foreign key to coupons
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<CouponEntity> coupons;
 
-    // Foreign key to purchases
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<PurchaseEntity> purchases;
 

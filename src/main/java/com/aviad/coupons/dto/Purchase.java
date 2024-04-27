@@ -9,6 +9,7 @@ public class Purchase {
     private int userId;
     private int couponId;
     private String couponName;
+    private String couponDescription;
     private int companyId;
     private String companyName;
     private int amount;
@@ -16,6 +17,20 @@ public class Purchase {
     private float price;
 
     public Purchase(){}
+
+    public Purchase(long id, int amount, Date purchaseDate, int userId, int couponId, int companyId, float price, String couponName, String couponDescription, String companyName){
+        this.id = id;
+        this.amount = amount;
+        this.userId = userId;
+        this.couponId = couponId;
+        this.companyId = companyId;
+        this.purchaseDate = purchaseDate;
+        this.price = price;
+        this.couponName = couponName;
+        this.couponDescription = couponDescription;
+        this.companyName = companyName;
+    }
+
     //Ctor for export data from DB
     public Purchase(long id, int amount, Date purchaseDate, int userId, int couponId, int companyId, float price) {
         this.id = id;
@@ -122,6 +137,14 @@ public class Purchase {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public String getCouponDescription() {
+        return couponDescription;
+    }
+
+    public void setCouponDescription(String couponDescription) {
+        this.couponDescription = couponDescription;
     }
 
     @Override

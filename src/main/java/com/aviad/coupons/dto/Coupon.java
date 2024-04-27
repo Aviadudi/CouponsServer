@@ -18,7 +18,6 @@ public class Coupon {
     private int companyId;
     private String userName;
     private byte[] imageData;
-//    private MultipartFile image;
     private int userId;
     private float price;
 
@@ -188,14 +187,6 @@ public class Coupon {
     public void setImageData(byte[] imageData) {
         this.imageData = imageData;
     }
-
-//    public MultipartFile getImage() {
-//        return image;
-//    }
-
-//    public void setImage(MultipartFile image) {
-//        this.image = image;
-//    }
 
     @Override
     public String toString() {

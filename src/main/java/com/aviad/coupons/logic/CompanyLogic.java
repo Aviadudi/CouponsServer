@@ -21,7 +21,7 @@ public class CompanyLogic {
     public Integer addCompany(Company company) throws ApplicationException {
         validateCompanyData(company);
         CompanyEntity companyEntity = new CompanyEntity(company);
-        this.companiesDal.save(companyEntity);
+        companyEntity = this.companiesDal.save(companyEntity);
         company.setId(companyEntity.getId());
         return company.getId();
     }

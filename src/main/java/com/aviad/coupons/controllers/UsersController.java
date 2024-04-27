@@ -19,19 +19,16 @@ public class UsersController {
         this.userLogic = userLogic;
     }
 
-    // Add user
     @PostMapping
     public void createUser(@RequestBody User user) throws ApplicationException {
         this.userLogic.addUser(user);
     }
 
-    // Update user
     @PutMapping
     public void updateUser(@RequestBody User user, @RequestHeader("Authorization") String token) throws ApplicationException {
         this.userLogic.updateUser(user, token);
     }
 
-    // Get all users
     @GetMapping
     public List<User> getUsers (@RequestHeader("Authorization") String token) throws ApplicationException {
         return this.userLogic.getAllUsers(token);
@@ -42,26 +39,22 @@ public class UsersController {
         this.userLogic.addUserAdmin(user,token);
     }
 
-    // Get user
     @GetMapping("/{id}")
     public User getUser(@PathVariable("id") int id) throws ApplicationException {
         return this.userLogic.getUser(id);
     }
 
-    // Delete user
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable("id") long id) throws ApplicationException {
         this.userLogic.deleteUser(id);
     }
 
-    // Get user by token
     @GetMapping("/byToken")
     public User getUserByToken(@RequestHeader("Authorization") String token) throws ApplicationException {
         return this.userLogic.getUserByToken(token);
     }
 
 
-    // Get users by company id
     @GetMapping("/byCompanyId")
     public List<User> getUsersByCompanyId (@RequestParam("id") int id, @RequestHeader("Authorization") String token) throws ApplicationException {
         return this.userLogic.getUsersByCompanyId(id, token);

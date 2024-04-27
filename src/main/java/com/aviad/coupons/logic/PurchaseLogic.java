@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+
 @Service
 public class PurchaseLogic {
     private IPurchasesDal purchasesDal;
@@ -25,35 +26,35 @@ public class PurchaseLogic {
 
     @Transactional(rollbackFor = Exception.class)
     public long addPurchase(Purchase purchase, String token) throws ApplicationException {
-        int userId = TokenDecodedDataUtil.decodedUserId(token);
-        int couponId = purchase.getCouponId();
-
-        Coupon coupon = couponLogic.getCouponData(couponId);
-        int companyId = coupon.getCompanyId();
-        float couponPrice = coupon.getPrice();
-        int amount = purchase.getAmount();
-        float price = couponPrice * amount;
-
-        Date purchaseDate = new Date();
-
-        purchase.setUserId(userId);
-        purchase.setCompanyId(companyId);
-        purchase.setPrice(price);
-        purchase.setPurchaseDate(purchaseDate);
-
+        purchase = initiatePurchaseData(purchase, token);
         validatePurchaseData(purchase);
 
         PurchaseEntity purchaseEntity = new PurchaseEntity(purchase);
-        this.purchasesDal.save(purchaseEntity);
+        purchaseEntity = this.purchasesDal.save(purchaseEntity);
         reduceCouponAmount(purchase);
         purchase.setId(purchaseEntity.getId());
         return purchase.getId();
     }
 
+    private Purchase initiatePurchaseData(Purchase purchase, String token) throws ApplicationException {
+        int userId = TokenDecodedDataUtil.decodedUserId(token);
+        purchase.setUserId(userId);
+        Date purchaseDate = new Date();
+        purchase.setPurchaseDate(purchaseDate);
+        int couponId = purchase.getCouponId();
+        Coupon coupon = couponLogic.getCouponData(couponId);
+        int companyId = coupon.getCompanyId();
+        float couponPrice = coupon.getPrice();
+        int amount = purchase.getAmount();
+        float price = couponPrice * amount;
+        purchase.setCompanyId(companyId);
+        purchase.setPrice(price);
+        return purchase;
+    }
+
     private void reduceCouponAmount(Purchase purchase) throws ApplicationException {
         int couponId = purchase.getCouponId();
         int purchaseAmount = purchase.getAmount();
-
         this.couponLogic.updateCouponAmountAfterPurchase(couponId, purchaseAmount);
     }
 
@@ -67,10 +68,7 @@ public class PurchaseLogic {
 
     public void updatePurchase(Purchase purchase, String token) throws ApplicationException {
         int userId = TokenDecodedDataUtil.decodedUserId(token);
-        int couponId = purchase.getCouponId();
-
-
-
+        purchase.setUserId(userId);
         validatePurchaseData(purchase);
         PurchaseEntity purchaseEntity = new PurchaseEntity(purchase);
         this.purchasesDal.save(purchaseEntity);
@@ -80,7 +78,7 @@ public class PurchaseLogic {
         return this.purchasesDal.getPurchases();
     }
 
-        public List<Purchase> getPurchasesByCompanyId(int id) throws ApplicationException {
+    public List<Purchase> getPurchasesByCompanyId(int id) throws ApplicationException {
         return this.purchasesDal.getPurchasesByCompanyId(id);
     }
 
@@ -91,41 +89,34 @@ public class PurchaseLogic {
     public List<Purchase> getPurchasesByCategoryId(int id) throws ApplicationException {
         return this.purchasesDal.getPurchasesByCategoryId(id);
     }
-//
-//    public List getPurchasesByDateRange(Date startDate, Date endDate) throws ApplicationException {
-//        return this.purchasesDal.getPurchasesByDateRange(startDate, endDate);
-//    }
 
-    private void validatePurchaseData(Purchase purchase) throws ApplicationException{
-        // validate user id
-        if (purchase.getUserId() <= 0){
+    private void validatePurchaseData(Purchase purchase) throws ApplicationException {
+        if (purchase.getUserId() <= 0) {
             throw new ApplicationException(ErrorType.INVALID_USER_ID);
         }
-        //validate coupon id
-        if (purchase.getCouponId() <= 0){
+        if (purchase.getCouponId() <= 0) {
             throw new ApplicationException(ErrorType.INVALID_COUPON_ID);
         }
-
         validatePurchaseDate(purchase);
         validatePurchaseAmount(purchase);
     }
 
     private void validatePurchaseAmount(Purchase purchase) throws ApplicationException {
-        if (purchase.getAmount() <= 0){
+        if (purchase.getAmount() <= 0) {
             throw new ApplicationException(ErrorType.INVALID_PURCHASE_AMOUNT);
         }
 
         int couponId = purchase.getCouponId();
         Coupon coupon = couponLogic.getCoupon(couponId);
         int couponAmountLeft = coupon.getAmount();
-        if (purchase.getAmount() > couponAmountLeft){
+        if (purchase.getAmount() > couponAmountLeft) {
             throw new ApplicationException(ErrorType.INVALID_COUPON_AMOUNT_TO_PURCHASE, "Can't purchase more then " + couponAmountLeft + " coupons");
         }
     }
 
     private void validatePurchaseDate(Purchase purchase) throws ApplicationException {
         Date currentDate = new Date();
-        if (purchase.getPurchaseDate().after(currentDate)){
+        if (purchase.getPurchaseDate().after(currentDate)) {
             throw new ApplicationException(ErrorType.INVALID_PURCHASE_DATE);
         }
     }

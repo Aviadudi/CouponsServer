@@ -45,7 +45,7 @@ public class User {
         this(0, username, password, email, null, null);
     }
 
-    // Ctor for get user without showing the password
+    // Ctor for get user without the password
     public User(int id, String username, String email, UserType userType, Integer companyId) {
         this(id, username, null, email, userType, companyId);
     }

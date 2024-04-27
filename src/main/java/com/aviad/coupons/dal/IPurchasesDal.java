@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface IPurchasesDal extends CrudRepository<PurchaseEntity, Long> {
-    // get all coupons
     @Query("SELECT new com.aviad.coupons.dto.Purchase (p.id, p.amount, p.purchaseDate,p.user.id, p.coupon.name, p.company.name, p.price)" +
             "FROM PurchaseEntity p")
     List<Purchase> getPurchases();
@@ -23,9 +22,7 @@ public interface IPurchasesDal extends CrudRepository<PurchaseEntity, Long> {
             "FROM PurchaseEntity p WHERE p.company.id = :id")
     List<Purchase> getPurchasesByCompanyId(@Param("id") int id);
 
-//    @Query("SELECT new com.aviad.coupons.dto.Purchase (p.id, p.amount, p.purchaseDate, p.user.id, p.coupon.name, p.company.name, p.price)" +
-//            "FROM PurchaseEntity p WHERE p.user.id = :id")
-@Query("SELECT new com.aviad.coupons.dto.Purchase (p.id, p.amount, p.purchaseDate,p.user.id, p.coupon.id, p.company.id, p.price)" +
+@Query("SELECT new com.aviad.coupons.dto.Purchase (p.id, p.amount, p.purchaseDate,p.user.id, p.coupon.id, p.company.id, p.price, p.coupon.name, p.coupon.description, p.company.name)" +
         "FROM PurchaseEntity p WHERE p.user.id = :id")
     List<Purchase> getPurchasesByUserId(@Param("id") int id);
 

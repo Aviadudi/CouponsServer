@@ -21,7 +21,7 @@ public class CategoryLogic {
     public int addCategory(Category category) throws ApplicationException {
         validateCategory(category);
         CategoryEntity categoryEntity = new CategoryEntity(category);
-        this.categoriesDal.save(categoryEntity);
+        categoryEntity = this.categoriesDal.save(categoryEntity);
         category.setId(categoryEntity.getId());
         return category.getId();
     }

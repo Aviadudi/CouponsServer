@@ -17,6 +17,7 @@ public class Company {
         this.phone = phone;
         this.email = email;
     }
+
     public Company(String name, String address, String  phone, String email) {
         this(0, name, address, phone, email);
     }

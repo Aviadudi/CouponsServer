@@ -44,36 +44,3 @@ public class ExceptionsHandler {
 }
 
 
-//	@ExceptionHandler(ApplicationException.class)
-//	public ErrorBean applicationExceptionHandler(HttpServletResponse response, ApplicationException applicationExction) {
-//
-//		ErrorType errorType = applicationExction.getErrorType();
-//		int errorNumber = errorType.getErrorNumber();
-//		String errorMessage = errorType.getErrorMessage();
-//		String errorName = errorType.getErrorName();
-//
-//		ErrorBean errorBean = new ErrorBean(errorNumber, errorMessage, errorName);
-//		response.setStatus(errorNumber);
-//
-//		//		check is critical - parameter in exceptions that we created
-//		if(applicationExction.getErrorType().isShowStackTrace()) {
-//			applicationExction.printStackTrace();
-//		}
-//
-//		return errorBean;
-//	}
-//
-//	@ExceptionHandler(Exception.class)
-//	public ErrorBean ExceptionHandler(HttpServletResponse response, Exception exception) {
-//
-//		int errorNumber = 601;
-//		String errorMessage = exception.getMessage();
-//
-//		ErrorBean errorBean = new ErrorBean(errorNumber, errorMessage, "GENERAL ERROR");
-//		response.setStatus(errorNumber);
-//		exception.printStackTrace();
-//
-//		return errorBean;
-//	}
-
-

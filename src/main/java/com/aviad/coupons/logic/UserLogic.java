@@ -29,7 +29,7 @@ public class UserLogic {
     }
 
     public void addUser(User user) throws ApplicationException {
-        validateNewUserData(user);
+        validateUserData(user);
         String originalPassword = user.getPassword();
         String encryptedPassword = EncryptUtils.encryptPassword(originalPassword);
         user.setPassword(encryptedPassword);
@@ -55,50 +55,39 @@ public class UserLogic {
     }
 
     public void updateUser(User user, String token) throws ApplicationException {
+        user = initiateUpdatedUserData(user, token);
+        UserEntity userEntity = new UserEntity(user);
+        this.usersDal.save(userEntity);
+    }
+
+    private User initiateUpdatedUserData(User user, String token) throws ApplicationException {
         UserType senderUserType = TokenDecodedDataUtil.decodedUserType(token);
         if (senderUserType == UserType.ADMIN) {
             if (user.getPassword().equals("")) {
-//                User oldUserData = getUser(user.getId());
-//                String originalPassword = oldUserData.getPassword();
                 String originalPassword = this.usersDal.getPasswordByUserId(user.getId());
                 user.setPassword(originalPassword);
                 validateUpdatedUserData(user);
             } else {
-                validateNewUserData(user);
+                validateUserData(user);
                 String encryptedPassword = EncryptUtils.encryptPassword(user.getPassword());
                 user.setPassword(encryptedPassword);
             }
-
             if (user.getCompanyId() == 0){
                 user.setCompanyId(null);
             }
-
-
-
-//            System.out.println();
-//
-//            String originalPassword = user.getPassword();
-//            String encryptedPassword = EncryptUtils.encryptPassword(originalPassword);
-//            user.setPassword(encryptedPassword);
-//
-//            SuccessfulLoginDetails successfulLoginDetails = JWTUtils.decodeJWT(token);
-//            user.setId(successfulLoginDetails.getId());
-//            user.setUserType(successfulLoginDetails.getUserType());
-//            user.setCompanyId(successfulLoginDetails.getCompanyId());
         }
-        if (senderUserType == UserType.COMPANY || senderUserType == UserType.CUSTOMER){
+        else if (senderUserType == UserType.COMPANY || senderUserType == UserType.CUSTOMER){
             validateUserPassword(user.getPassword());
             String newPassword = user.getPassword();
             String encryptedPassword = EncryptUtils.encryptPassword(newPassword);
             user.setPassword(encryptedPassword);
-            //extract user data from token and not from user sent data
-            SuccessfulLoginDetails successfulLoginDetails = JWTUtils.decodeJWT(token);
-            user.setId(successfulLoginDetails.getId());
-            user.setUserType(successfulLoginDetails.getUserType());
-            user.setCompanyId(successfulLoginDetails.getCompanyId());
+            //Extract user data from token and not from user submitted data
+            SuccessfulLoginDetails userData = JWTUtils.decodeJWT(token);
+            user.setId(userData.getId());
+            user.setUserType(userData.getUserType());
+            user.setCompanyId(userData.getCompanyId());
         }
-        UserEntity userEntity = new UserEntity(user);
-        this.usersDal.save(userEntity);
+        return user;
     }
 
     public List<User> getAllUsers(String token) throws ApplicationException {
@@ -127,13 +116,13 @@ public class UserLogic {
 
         SuccessfulLoginDetails successfulLoginDetails = this.usersDal.login(userLoginData);
         if (successfulLoginDetails == null) {
-            throw new ApplicationException(ErrorType.FAILED_LOGIN);
+            throw new ApplicationException(ErrorType.INCORRECT_USER_NAME_OR_PASSWORD);
         }
         String token = JWTUtils.createJWT(successfulLoginDetails);
         return token;
     }
 
-    private void validateNewUserData(User user) throws ApplicationException {
+    private void validateUserData(User user) throws ApplicationException {
         validateUserName(user.getUsername());
         validateUserPassword(user.getPassword());
         validateUserEmail(user.getEmail());
